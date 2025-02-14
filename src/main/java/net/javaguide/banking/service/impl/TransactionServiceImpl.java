@@ -1,11 +1,11 @@
 package net.javaguide.banking.service.impl;
 
 import org.springframework.stereotype.Service;
+import java.time.LocalDateTime;
 
 import net.javaguide.banking.dto.TransactionDto;
 import net.javaguide.banking.entity.Account;
 import net.javaguide.banking.entity.Transaction;
-import net.javaguide.banking.entity.TransactionType;
 import net.javaguide.banking.mapper.TransactionMapper;
 import net.javaguide.banking.repository.AccountRepository;
 import net.javaguide.banking.repository.TransactionRepository;
@@ -21,39 +21,55 @@ public class TransactionServiceImpl implements TransactionService {
         this.transactionRepository = transactionRepository;
     }
 
-    public TransactionDto deposit(Long accountId, Double amount) {
+    public TransactionDto deposit(Long accountId, TransactionDto transactionDto) {
         Account account = accountRepository.findById(accountId)
                 .orElseThrow(() -> new RuntimeException("Account not found"));
+        if (transactionDto.getAmount() < 0) {
+            throw new RuntimeException("Amount cannot be negative");
+        }
 
-        account.setBalance(account.getBalance() + amount);
+        System.out.println("TransactionDto" + transactionDto);
+
+        account.setBalance(account.getBalance() + transactionDto.getAmount());
         accountRepository.save(account);
 
-        TransactionDto transactionDto = new TransactionDto();
-        transactionDto.setAccountId(accountId);
-        transactionDto.setAmount(amount);
-        Transaction transaction = TransactionMapper.mapToTransaction(transactionDto);
+        Transaction transaction = new Transaction();
         transaction.setAccount(account);
-        transaction.setAmount(amount);
-        transaction.setTransactionType(TransactionType.DEPOSIT);
+        transaction.setAmount(transactionDto.getAmount());
+        transaction.setTransactionType(transactionDto.getTransactionType());
+        transaction.setTransactionDate(transactionDto.getTransactionDate() != null
+                ? transactionDto.getTransactionDate()
+                : LocalDateTime.now());
 
         Transaction savedTransaction = transactionRepository.save(transaction);
+
         return TransactionMapper.mapToTransactionDto(savedTransaction);
     }
 
-    // public void withdraw(Long accountId, Double amount) {
-    // Account account = accountRepository.findById(accountId)
-    // .orElseThrow(() -> new RuntimeException("Account not found"));
-    // if (account.getBalance() < amount) {
-    // throw new RuntimeException("Insufficient balance");
-    // }
-    // account.setBalance(account.getBalance() - amount);
-    // accountRepository.save(account);
-    // Transaction transaction = new Transaction();
-    // transaction.setAccount(account);
-    // transaction.setAmount(amount);
-    // transaction.setType(TransactionType.WITHDRAW);
-    // transactionRepository.save(transaction);
-    // }
+    public TransactionDto withdraw(Long accountId, TransactionDto transactionDto) {
+        Account account = accountRepository.findById(accountId)
+                .orElseThrow(() -> new RuntimeException("Account not found"));
+        if (transactionDto.getAmount() < 0) {
+            throw new RuntimeException("Amount cannot be negative");
+        }
+
+        System.out.println("TransactionDto" + transactionDto);
+
+        account.setBalance(account.getBalance() - transactionDto.getAmount());
+        accountRepository.save(account);
+
+        Transaction transaction = new Transaction();
+        transaction.setAccount(account);
+        transaction.setAmount(transactionDto.getAmount());
+        transaction.setTransactionType(transactionDto.getTransactionType());
+        transaction.setTransactionDate(transactionDto.getTransactionDate() != null
+                ? transactionDto.getTransactionDate()
+                : LocalDateTime.now());
+
+        Transaction savedTransaction = transactionRepository.save(transaction);
+
+        return TransactionMapper.mapToTransactionDto(savedTransaction);
+    }
 
     // public void transfer(Long fromAccountId, Long toAccountId, Double amount) {
     // Account fromAccount = accountRepository.findById(fromAccountId)

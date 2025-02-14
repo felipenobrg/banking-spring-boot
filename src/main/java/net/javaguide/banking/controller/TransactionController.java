@@ -14,16 +14,23 @@ import net.javaguide.banking.service.TransactionService;
 @RequestMapping("api/transactions")
 public class TransactionController {
 
-    private TransactionService TransactionService;
+    private TransactionService transactionService;
 
     public TransactionController(TransactionService TransactionService) {
-        this.TransactionService = TransactionService;
+        this.transactionService = TransactionService;
     }
 
     @PostMapping("/deposit")
-    public ResponseEntity<TransactionDto> deposit(@RequestBody TransactionDto TransactionDto) {
-        TransactionDto transactionDto = TransactionService.deposit(TransactionDto.getAccountId(),
-                TransactionDto.getAmount());
-        return new ResponseEntity<>(transactionDto, HttpStatus.CREATED);
+    public ResponseEntity<TransactionDto> deposit(@RequestBody TransactionDto transactionDto) {
+        System.out.println("TransactionDto: " + transactionDto);
+        TransactionDto result = transactionService.deposit(transactionDto.getAccountId(), transactionDto);
+        return new ResponseEntity<>(result, HttpStatus.CREATED);
+    }
+
+    @PostMapping("/withdrawal")
+    public ResponseEntity<TransactionDto> withdraw(@RequestBody TransactionDto transactionDto) {
+        System.out.println("TransactionDto: " + transactionDto);
+        TransactionDto result = transactionService.withdraw(transactionDto.getAccountId(), transactionDto);
+        return new ResponseEntity<>(result, HttpStatus.CREATED);
     }
 }
