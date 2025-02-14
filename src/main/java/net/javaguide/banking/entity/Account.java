@@ -1,28 +1,31 @@
 package net.javaguide.banking.entity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import jakarta.persistence.*;
+import lombok.*;
 
-@Setter()
-@Getter()
-@NoArgsConstructor()
-@AllArgsConstructor()
+@Setter
+@Getter
+@NoArgsConstructor
+@AllArgsConstructor
+@Entity
 @Table(name = "accounts")
-@Entity()
 public class Account {
-    @Id()
-    @GeneratedValue()
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "account_holder_name")
+    @Column(name = "account_holder_name", nullable = false)
     private String accountHolderName;
-    private Double balance;
 
+    @Column(nullable = false)
+    private Double balance = 0.0;
+
+    @Column(name = "account_type", nullable = false)
+    private AccountType accountType;
+
+    @Column(name = "currency", nullable = false)
+    private String currency = "USD";
+
+    @Column(name = "overdraft_limit")
+    private Double overdraftLimit = 0.0;
 }
