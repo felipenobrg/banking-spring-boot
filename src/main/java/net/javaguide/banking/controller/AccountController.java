@@ -38,4 +38,11 @@ public class AccountController {
         AccountDto accountDto = accountService.deposit(id, amount);
         return ResponseEntity.ok(accountDto);
     }
+
+    @PostMapping("/{id}/withdraw/{amount}")
+    public ResponseEntity<AccountDto> withdraw(@PathVariable("id") Long id, @PathVariable("amount") Double amount) {
+        AccountDto accountDto = accountService.withdraw(id, amount);
+        return ResponseEntity.ok(accountDto);
+    }
+
 }
