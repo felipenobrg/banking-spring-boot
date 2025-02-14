@@ -1,11 +1,14 @@
 package net.javaguide.banking.dto;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
-@Data()
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class AccountDto {
     private Long id;
     private String accountHolderName;
     private Double balance;
-
 }
