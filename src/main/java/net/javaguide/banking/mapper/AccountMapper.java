@@ -15,7 +15,6 @@ public class AccountMapper {
         account.setCurrency(accountDto.getCurrency());
         account.setOverdraftLimit(accountDto.getOverdraftLimit());
 
-        // Convert String to Enum
         if (accountDto.getAccountType() != null) {
             try {
                 account.setAccountType(AccountType.valueOf(accountDto.getAccountType().toUpperCase()));
