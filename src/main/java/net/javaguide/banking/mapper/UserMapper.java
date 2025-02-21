@@ -9,17 +9,16 @@ public class UserMapper {
         User User = new User();
         User.setId(UserDto.getId());
         User.setEmail(UserDto.getEmail());
-        User.setName(UserDto.getName());
-        User.setPassword(UserDto.getPassword());
+        User.setUsername(UserDto.getUsername());
 
         return User;
     }
 
     public static UserDto mapToUserDto(User User) {
-        return new UserDto(
-                User.getId(),
-                User.getEmail(),
-                User.getName(),
-                User.getPassword());
+        UserDto userDto = new UserDto();
+        userDto.setId(User.getId());
+        userDto.setEmail(User.getEmail());
+        userDto.setUsername(User.getUsername());
+        return userDto;
     }
 }
