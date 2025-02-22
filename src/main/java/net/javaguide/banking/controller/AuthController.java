@@ -40,8 +40,6 @@ public class AuthController {
 
     @PostMapping("/signin")
     public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
-        System.out.println("SINGIN");
-
         Authentication authentication = authenticationManager
                 .authenticate(
                         new UsernamePasswordAuthenticationToken(loginRequest.getUsername(),
@@ -50,8 +48,6 @@ public class AuthController {
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
         UserDetailImpl userDetails = (UserDetailImpl) authentication.getPrincipal();
-
-        System.out.println("userDetails: " + userDetails);
 
         String jwtToken = jwtUtils.generateTokenFromUsername(userDetails.getUsername());
         ResponseCookie jwtCookie = ResponseCookie.from("jwt", jwtToken)
@@ -65,7 +61,8 @@ public class AuthController {
         return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, jwtCookie.toString())
                 .body(new UserDto(userDetails.getId(),
                         userDetails.getUsername(),
-                        userDetails.getEmail()));
+                        userDetails.getEmail(),
+                        userDetails.getRole()));
     }
 
     @PostMapping("/signup")
@@ -78,9 +75,11 @@ public class AuthController {
         if (userRepository.existsByEmail(signUpRequest.getEmail())) {
             return ResponseEntity.badRequest().body("Error: Email is already in use!");
         }
-        User user = new User(signUpRequest.getUsername(),
+        User user = new User(
+                signUpRequest.getUsername(),
                 signUpRequest.getEmail(),
-                encoder.encode(signUpRequest.getPassword()));
+                encoder.encode(signUpRequest.getPassword()),
+                signUpRequest.getRole());
 
         userRepository.save(user);
 

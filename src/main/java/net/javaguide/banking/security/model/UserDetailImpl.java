@@ -13,15 +13,17 @@ public class UserDetailImpl implements UserDetails {
     private Long id;
     private String username;
     private String email;
+    private Role role;
 
     @JsonIgnore
     private String password;
 
-    public UserDetailImpl(Long id, String username, String email, String password) {
+    public UserDetailImpl(Long id, String username, String email, String password, Role role) {
         this.id = id;
         this.username = username;
         this.email = email;
         this.password = password;
+        this.role = role;
     }
 
     public static UserDetailImpl build(User user) {
@@ -29,7 +31,12 @@ public class UserDetailImpl implements UserDetails {
                 user.getId(),
                 user.getUsername(),
                 user.getEmail(),
-                user.getPassword());
+                user.getPassword(),
+                user.getRole());
+    }
+
+    public Role getRole() {
+        return role;
     }
 
     public Long getId() {

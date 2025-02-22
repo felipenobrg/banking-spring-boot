@@ -2,6 +2,7 @@ package net.javaguide.banking.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import net.javaguide.banking.security.model.Role;
 
 @Setter
 @Getter
@@ -24,15 +25,19 @@ public class User {
     @Column(nullable = false)
     private String password;
 
+    @Column(nullable = false)
+    private Role role;
+
     private boolean isAccountNonExpired;
     private boolean isAccountNonLocked;
     private boolean isCredentialsNonExpired;
     private boolean isEnabled;
 
-    public User(String name, String email, String password) {
+    public User(String name, String email, String password, Role role) {
         this.username = name;
         this.email = email;
         this.password = password;
+        this.role = role;
         this.isAccountNonExpired = true;
         this.isAccountNonLocked = true;
         this.isCredentialsNonExpired = true;
