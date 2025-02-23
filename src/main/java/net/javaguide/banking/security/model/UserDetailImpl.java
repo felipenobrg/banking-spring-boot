@@ -5,7 +5,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import net.javaguide.banking.entity.User;
 import java.util.Collection;
-import java.util.Collections;
 
 public class UserDetailImpl implements UserDetails {
     private static final long serialVersionUID = 1L;
@@ -18,21 +17,26 @@ public class UserDetailImpl implements UserDetails {
     @JsonIgnore
     private String password;
 
-    public UserDetailImpl(Long id, String username, String email, String password, Role role) {
+    private Collection<? extends GrantedAuthority> authorities;
+
+    public UserDetailImpl(Long id, String username, String email, String password, Role role,
+            Collection<? extends GrantedAuthority> authorities) {
         this.id = id;
         this.username = username;
         this.email = email;
         this.password = password;
         this.role = role;
+        this.authorities = authorities;
     }
 
-    public static UserDetailImpl build(User user) {
+    public static UserDetailImpl build(User user, Collection<? extends GrantedAuthority> authorities) {
         return new UserDetailImpl(
                 user.getId(),
                 user.getUsername(),
                 user.getEmail(),
                 user.getPassword(),
-                user.getRole());
+                user.getRole(),
+                authorities);
     }
 
     public Role getRole() {
@@ -59,7 +63,7 @@ public class UserDetailImpl implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return Collections.emptyList();
+        return authorities;
     }
 
     @Override
