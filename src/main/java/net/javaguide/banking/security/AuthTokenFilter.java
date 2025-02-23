@@ -37,6 +37,16 @@ public class AuthTokenFilter extends OncePerRequestFilter {
                 System.out.println("[DEBUG] Authenticated User: " + username);
 
                 UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+                System.out.println("[DEBUG] Loaded User Details: " + userDetails.getUsername());
+                System.out.println("[DEBUG] User Authorities: " + userDetails.getAuthorities());
+
+                if (userDetails.getAuthorities().stream()
+                        .anyMatch(grantedAuthority -> grantedAuthority.getAuthority().equals("ADMIN"))) {
+                    System.out.println("[DEBUG] User has admin authority.");
+                } else {
+                    System.out.println("[DEBUG] User does not have admin authority.");
+                }
+
                 UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
                         userDetails,
                         null,
@@ -45,7 +55,6 @@ public class AuthTokenFilter extends OncePerRequestFilter {
                 authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                 SecurityContextHolder.getContext().setAuthentication(authentication);
                 System.out.println("[DEBUG] Authentication set for user: " + username);
-
             } else {
                 System.out.println("[ERROR] JWT is invalid or null");
             }
@@ -76,5 +85,4 @@ public class AuthTokenFilter extends OncePerRequestFilter {
         System.out.println("[ERROR] JWT Cookie Not Found!");
         return null;
     }
-
 }
