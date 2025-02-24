@@ -1,14 +1,16 @@
 package net.javaguide.banking.mapper;
 
+import org.springframework.security.core.context.SecurityContextHolder;
+
 import net.javaguide.banking.dto.AccountDto;
 import net.javaguide.banking.entity.Account;
 import net.javaguide.banking.entity.AccountType;
+import net.javaguide.banking.entity.User;
 
 public class AccountMapper {
-
-    public static Account mapToAccount(AccountDto accountDto) {
+    public static Account mapToAccount(AccountDto accountDto, User user) {
         Account account = new Account();
-
+        account.setUser(user);
         account.setBalance(accountDto.getBalance());
         account.setAccountHolderName(accountDto.getAccountHolderName());
         account.setCurrency(accountDto.getCurrency());
