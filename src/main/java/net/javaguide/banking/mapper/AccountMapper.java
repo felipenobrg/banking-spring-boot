@@ -1,7 +1,5 @@
 package net.javaguide.banking.mapper;
 
-import org.springframework.security.core.context.SecurityContextHolder;
-
 import net.javaguide.banking.dto.AccountDto;
 import net.javaguide.banking.entity.Account;
 import net.javaguide.banking.entity.AccountType;
