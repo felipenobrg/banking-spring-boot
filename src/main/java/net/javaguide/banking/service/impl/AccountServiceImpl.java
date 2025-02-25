@@ -1,6 +1,5 @@
 package net.javaguide.banking.service.impl;
 
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import net.javaguide.banking.dto.AccountDto;
@@ -8,9 +7,9 @@ import net.javaguide.banking.entity.Account;
 import net.javaguide.banking.entity.User;
 import net.javaguide.banking.mapper.AccountMapper;
 import net.javaguide.banking.service.AccountService;
+import net.javaguide.banking.utils.SecurityUtils;
 import net.javaguide.banking.repository.AccountRepository;
 import net.javaguide.banking.repository.UserRepository;
-import net.javaguide.banking.security.model.UserDetail;
 
 @Service
 public class AccountServiceImpl implements AccountService {
@@ -25,7 +24,7 @@ public class AccountServiceImpl implements AccountService {
 
     @Override
     public AccountDto createAccount(AccountDto accountDto) {
-        String username = getAuthenticatedUsername();
+        String username = SecurityUtils.getAuthenticatedUsername();
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new RuntimeException("User not found: " + username));
 
@@ -44,17 +43,5 @@ public class AccountServiceImpl implements AccountService {
     public AccountDto getAccountById(Long id) {
         Account account = accountRepository.findById(id).orElseThrow(() -> new RuntimeException("Account not found"));
         return AccountMapper.mapToAccountDto(account);
-    }
-
-    private String getAuthenticatedUsername() {
-        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-
-        if (principal instanceof UserDetail) {
-            return ((UserDetail) principal).getUsername();
-        } else if (principal instanceof org.springframework.security.core.userdetails.UserDetails) {
-            return ((org.springframework.security.core.userdetails.UserDetails) principal).getUsername();
-        } else {
-            return principal.toString();
-        }
     }
 }

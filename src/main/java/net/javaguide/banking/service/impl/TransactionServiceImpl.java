@@ -6,23 +6,37 @@ import java.time.LocalDateTime;
 import net.javaguide.banking.dto.TransactionDto;
 import net.javaguide.banking.entity.Account;
 import net.javaguide.banking.entity.Transaction;
+import net.javaguide.banking.entity.User;
 import net.javaguide.banking.mapper.TransactionMapper;
 import net.javaguide.banking.repository.AccountRepository;
 import net.javaguide.banking.repository.TransactionRepository;
+import net.javaguide.banking.repository.UserRepository;
 import net.javaguide.banking.service.TransactionService;
+import net.javaguide.banking.utils.SecurityUtils;
 
 @Service
 public class TransactionServiceImpl implements TransactionService {
     private final AccountRepository accountRepository;
     private final TransactionRepository transactionRepository;
+    private final UserRepository userRepository;
 
-    public TransactionServiceImpl(AccountRepository accountRepository, TransactionRepository transactionRepository) {
+    public TransactionServiceImpl(AccountRepository accountRepository, TransactionRepository transactionRepository,
+            UserRepository userRepository) {
         this.accountRepository = accountRepository;
         this.transactionRepository = transactionRepository;
+        this.userRepository = userRepository;
     }
 
-    public TransactionDto deposit(Long accountId, TransactionDto transactionDto) {
-        Account account = accountRepository.findById(accountId)
+    public TransactionDto deposit(TransactionDto transactionDto) {
+        String username = SecurityUtils.getAuthenticatedUsername();
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new RuntimeException("User not found: " + username));
+
+        if (user.getId() == null) {
+            throw new RuntimeException("User ID is null for user: " + username);
+        }
+
+        Account account = accountRepository.findById(user.getId())
                 .orElseThrow(() -> new RuntimeException("Account not found"));
         if (transactionDto.getAmount() < 0) {
             throw new RuntimeException("Amount cannot be negative");
@@ -46,8 +60,16 @@ public class TransactionServiceImpl implements TransactionService {
         return TransactionMapper.mapToTransactionDto(savedTransaction);
     }
 
-    public TransactionDto withdraw(Long accountId, TransactionDto transactionDto) {
-        Account account = accountRepository.findById(accountId)
+    public TransactionDto withdraw(TransactionDto transactionDto) {
+        String username = SecurityUtils.getAuthenticatedUsername();
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new RuntimeException("User not found: " + username));
+
+        if (user.getId() == null) {
+            throw new RuntimeException("User ID is null for user: " + username);
+        }
+
+        Account account = accountRepository.findById(user.getId())
                 .orElseThrow(() -> new RuntimeException("Account not found"));
         if (transactionDto.getAmount() < 0) {
             throw new RuntimeException("Amount cannot be negative");

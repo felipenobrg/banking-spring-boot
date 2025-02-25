@@ -23,14 +23,14 @@ public class TransactionController {
     @PostMapping("/deposit")
     public ResponseEntity<TransactionDto> deposit(@RequestBody TransactionDto transactionDto) {
         System.out.println("TransactionDto: " + transactionDto);
-        TransactionDto result = transactionService.deposit(transactionDto.getAccountId(), transactionDto);
+        TransactionDto result = transactionService.deposit(transactionDto);
         return new ResponseEntity<>(result, HttpStatus.CREATED);
     }
 
     @PostMapping("/withdrawal")
     public ResponseEntity<TransactionDto> withdraw(@RequestBody TransactionDto transactionDto) {
         System.out.println("TransactionDto: " + transactionDto);
-        TransactionDto result = transactionService.withdraw(transactionDto.getAccountId(), transactionDto);
+        TransactionDto result = transactionService.withdraw(transactionDto);
         return new ResponseEntity<>(result, HttpStatus.CREATED);
     }
 }

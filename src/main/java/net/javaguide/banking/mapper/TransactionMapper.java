@@ -18,7 +18,6 @@ public class TransactionMapper {
     public static TransactionDto mapToTransactionDto(Transaction transaction) {
         return new TransactionDto(
                 transaction.getId(),
-                transaction.getAccount().getId(),
                 transaction.getAmount(),
                 transaction.getTransactionType(),
                 transaction.getTransactionDate());
