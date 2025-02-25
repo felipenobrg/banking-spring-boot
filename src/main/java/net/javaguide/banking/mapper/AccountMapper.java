@@ -10,7 +10,7 @@ public class AccountMapper {
         Account account = new Account();
         account.setUser(user);
         account.setBalance(accountDto.getBalance());
-        account.setAccountHolderName(accountDto.getAccountHolderName());
+        account.setAccountHolderName(user.getUsername());
         account.setCurrency(accountDto.getCurrency());
         account.setOverdraftLimit(accountDto.getOverdraftLimit());
 
