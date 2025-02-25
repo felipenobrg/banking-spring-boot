@@ -1,5 +1,6 @@
 package net.javaguide.banking.service.impl;
 
+import java.util.List;
 import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 
@@ -91,6 +92,24 @@ public class TransactionServiceImpl implements TransactionService {
         Transaction savedTransaction = transactionRepository.save(transaction);
 
         return TransactionMapper.mapToTransactionDto(savedTransaction);
+    }
+
+    public List<TransactionDto> getHistoric() {
+        String username = SecurityUtils.getAuthenticatedUsername();
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new RuntimeException("User not found: " + username));
+
+        if (user.getId() == null) {
+            throw new RuntimeException("User ID is null for user: " + username);
+        }
+
+        Account account = accountRepository.findById(user.getId())
+                .orElseThrow(() -> new RuntimeException("Account not found"));
+
+        List<Transaction> transactionHistoric = transactionRepository.findByAccountId(account.getId());
+        return transactionHistoric.stream()
+                .map(TransactionMapper::mapToTransactionDto)
+                .toList();
     }
 
     // public void transfer(Long fromAccountId, Long toAccountId, Double amount) {
