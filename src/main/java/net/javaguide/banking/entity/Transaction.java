@@ -22,6 +22,12 @@ public class Transaction {
     @Column(name = "transaction_type", nullable = false)
     private TransactionType transactionType;
 
+    @Column(name = "to_account_id")
+    private Long toAccountId;
+
+    @Column(name = "to_account_name")
+    private String toAccountName;
+
     @Column(nullable = false)
     private Double amount;
 

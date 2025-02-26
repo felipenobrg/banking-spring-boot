@@ -150,6 +150,8 @@ public class TransactionServiceImpl implements TransactionService {
 
         Transaction transaction = new Transaction();
         transaction.setAccount(fromAccount);
+        transaction.setToAccountId(toAccount.getId());
+        transaction.setToAccountName(toAccount.getAccountHolderName());
         transaction.setAmount(amount);
         transaction.setTransactionType(TransactionType.TRANSFER);
         transaction.setTransactionDate(LocalDateTime.now());

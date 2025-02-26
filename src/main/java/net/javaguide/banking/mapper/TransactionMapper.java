@@ -16,10 +16,13 @@ public class TransactionMapper {
     }
 
     public static TransactionDto mapToTransactionDto(Transaction transaction) {
-        return new TransactionDto(
-                transaction.getId(),
-                transaction.getAmount(),
-                transaction.getTransactionType(),
-                transaction.getTransactionDate());
+        TransactionDto transactionDto = new TransactionDto();
+        transactionDto.setId(transaction.getId());
+        transactionDto.setAmount(transaction.getAmount());
+        transactionDto.setTransactionType(transaction.getTransactionType());
+        transactionDto.setTransactionDate(transaction.getTransactionDate());
+        transactionDto.setToAccountId(transaction.getToAccountId());
+        transactionDto.setToAccountName(transaction.getToAccountName());
+        return transactionDto;
     }
 }

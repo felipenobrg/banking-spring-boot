@@ -12,8 +12,10 @@ import net.javaguide.banking.entity.TransactionType;
 @NoArgsConstructor
 public class TransactionDto {
     private Long id;
+    private Long toAccountId;
     private Double amount;
     private TransactionType transactionType;
     private LocalDateTime transactionDate;
+    private String toAccountName;
 
 }

@@ -58,9 +58,6 @@ public class AuthController {
                 .sameSite("Strict")
                 .build();
 
-        System.out.println("USER EMAIL: " + userDetails.getEmail());
-        System.out.println("USER USERNAME: " + userDetails.getUsername());
-
         return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, jwtCookie.toString())
                 .body(new UserDto(userDetails.getId(),
                         userDetails.getEmail(),
