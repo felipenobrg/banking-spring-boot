@@ -6,4 +6,5 @@ import net.javaguide.banking.entity.Account;
 
 public interface AccountRepository extends JpaRepository<Account, Long> {
 
+    Account findByAccountHolderName(String accountHolderName);
 }

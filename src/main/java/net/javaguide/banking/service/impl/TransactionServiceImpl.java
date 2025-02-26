@@ -7,6 +7,7 @@ import java.time.LocalDateTime;
 import net.javaguide.banking.dto.TransactionDto;
 import net.javaguide.banking.entity.Account;
 import net.javaguide.banking.entity.Transaction;
+import net.javaguide.banking.entity.TransactionType;
 import net.javaguide.banking.entity.User;
 import net.javaguide.banking.mapper.TransactionMapper;
 import net.javaguide.banking.repository.AccountRepository;
@@ -112,23 +113,52 @@ public class TransactionServiceImpl implements TransactionService {
                 .toList();
     }
 
-    // public void transfer(Long fromAccountId, Long toAccountId, Double amount) {
-    // Account fromAccount = accountRepository.findById(fromAccountId)
-    // .orElseThrow(() -> new RuntimeException("Account not found"));
-    // Account toAccount = accountRepository.findById(toAccountId)
-    // .orElseThrow(() -> new RuntimeException("Account not found"));
-    // if (fromAccount.getBalance() < amount) {
-    // throw new RuntimeException("Insufficient balance");
-    // }
-    // fromAccount.setBalance(fromAccount.getBalance() - amount);
-    // toAccount.setBalance(toAccount.getBalance() + amount);
-    // accountRepository.save(fromAccount);
-    // accountRepository.save(toAccount);
-    // Transaction transaction = new Transaction();
-    // transaction.setAccount(fromAccount);
-    // transaction.setAmount(amount);
-    // transaction.setType(TransactionType.TRANSFER);
-    // transaction.setToAccount(toAccount);
-    // transactionRepository.save(transaction);
-    // }
+    public TransactionDto transfer(String accountHolderName, Double amount) {
+        String username = SecurityUtils.getAuthenticatedUsername();
+        if (username == null) {
+            throw new RuntimeException("Usuário não autenticado");
+        }
+
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new RuntimeException("User not found: " + username));
+
+        if (user.getId() == null) {
+            throw new RuntimeException("User ID is null for user: " + username);
+        }
+
+        Account fromAccount = accountRepository.findById(user.getId())
+                .orElseThrow(() -> new RuntimeException("Sender account not found"));
+
+        Account toAccount = accountRepository.findByAccountHolderName(accountHolderName);
+        if (toAccount == null) {
+            throw new RuntimeException("Recipient account not found: " + accountHolderName);
+        }
+
+        if (amount == null || amount <= 0) {
+            throw new RuntimeException("Transfer amount must be greater than zero");
+        }
+
+        if (fromAccount.getBalance() < amount) {
+            throw new RuntimeException("Insufficient balance for transfer");
+        }
+
+        fromAccount.setBalance(fromAccount.getBalance() - amount);
+        toAccount.setBalance(toAccount.getBalance() + amount);
+
+        accountRepository.save(fromAccount);
+        accountRepository.save(toAccount);
+
+        Transaction transaction = new Transaction();
+        transaction.setAccount(fromAccount);
+        transaction.setAmount(amount);
+        transaction.setTransactionType(TransactionType.TRANSFER);
+        transaction.setTransactionDate(LocalDateTime.now());
+        System.out.println(transaction.getAmount());
+        System.out.println(transaction.getTransactionType());
+
+        Transaction savedTransaction = transactionRepository.save(transaction);
+
+        return TransactionMapper.mapToTransactionDto(savedTransaction);
+    }
+
 }

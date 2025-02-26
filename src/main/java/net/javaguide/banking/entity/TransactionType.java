@@ -2,7 +2,8 @@ package net.javaguide.banking.entity;
 
 public enum TransactionType {
     DEPOSIT,
-    WITHDRAWAL;
+    WITHDRAWAL,
+    TRANSFER;
 
     public static TransactionType fromString(String transactionType) {
         for (TransactionType type : TransactionType.values()) {

@@ -11,5 +11,5 @@ public interface TransactionService {
 
     List<TransactionDto> getHistoric();
 
-    // TransactionDto transfer(Long fromAccountId, Long toAccountId, Double amount);
+    TransactionDto transfer(String accountHolderName, Double amount);
 }
