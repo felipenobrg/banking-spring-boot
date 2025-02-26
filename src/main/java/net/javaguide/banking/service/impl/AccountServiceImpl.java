@@ -40,6 +40,19 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
+    public AccountDto getAccount() {
+        String username = SecurityUtils.getAuthenticatedUsername();
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new RuntimeException("User not found: " + username));
+
+        Account account = accountRepository.findByAccountHolderName(user.getUsername());
+        if (account == null) {
+            throw new RuntimeException("Account not found for user: " + username);
+        }
+        return AccountMapper.mapToAccountDto(account);
+    }
+
+    @Override
     public AccountDto getAccountById(Long id) {
         Account account = accountRepository.findById(id).orElseThrow(() -> new RuntimeException("Account not found"));
         return AccountMapper.mapToAccountDto(account);
