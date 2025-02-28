@@ -20,6 +20,7 @@ import java.util.Optional;
 import net.javaguide.banking.controller.AccountController;
 import net.javaguide.banking.dto.AccountDto;
 import net.javaguide.banking.entity.Account;
+import net.javaguide.banking.entity.AccountType;
 import net.javaguide.banking.entity.User;
 import net.javaguide.banking.repository.AccountRepository;
 import net.javaguide.banking.repository.UserRepository;
@@ -72,6 +73,43 @@ class AccountControllerTest {
                     .andDo(result -> System.out.println("Response: " + result.getResponse().getContentAsString()))
                     .andExpect(status().is2xxSuccessful());
         }
+    }
+
+    @Test
+    void createAccount() throws Exception {
+        String fakeUsername = "testuser";
+
+        try (MockedStatic<SecurityUtils> securityUtilsMock = Mockito.mockStatic(SecurityUtils.class)) {
+            securityUtilsMock.when(SecurityUtils::getAuthenticatedUsername).thenReturn(fakeUsername);
+
+            User mockUser = new User();
+            mockUser.setUsername(fakeUsername);
+            when(userRepository.findByUsername(fakeUsername)).thenReturn(Optional.of(mockUser));
+
+            Account mockAccount = new Account();
+            mockAccount.setAccountHolderName(fakeUsername);
+            mockAccount.setBalance(500.0);
+            mockAccount.setAccountType(AccountType.SAVINGS);
+            mockAccount.setCurrency("USD");
+            mockAccount.setOverdraftLimit(0.0);
+
+            when(accountRepository.findByAccountHolderName(fakeUsername)).thenReturn(mockAccount);
+
+            AccountDto mockInputDto = new AccountDto();
+            mockInputDto.setBalance(500.0);
+
+            AccountDto mockAccountDto = new AccountDto();
+            mockAccountDto.setBalance(500.0);
+            when(accountService.createAccount(mockInputDto)).thenReturn(mockAccountDto);
+
+            mockMvc.perform(MockMvcRequestBuilders.post("/api/accounts")
+                    .contentType(MediaType.APPLICATION_JSON))
+                    .andDo(result -> System.out.println("Response: " + result.getResponse().getContentAsString()))
+                    .andExpect(status().is2xxSuccessful());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
     }
 
 }
