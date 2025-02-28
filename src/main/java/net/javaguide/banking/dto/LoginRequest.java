@@ -21,4 +21,5 @@ public class LoginRequest {
     @NotBlank(message = "Password cannot be empty")
     @Size(min = 6, max = 20, message = "Password must be between 6 and 20 characters")
     private String password;
+
 }
