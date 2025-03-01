@@ -29,19 +29,22 @@ public class User {
     @Enumerated(EnumType.STRING)
     private Role role;
 
+    @Column(nullable = true)
+    private String verificationCode;
+
+    @Column(nullable = false)
+    private boolean isVerified = false;
+
     private boolean isAccountNonExpired;
     private boolean isAccountNonLocked;
     private boolean isCredentialsNonExpired;
     private boolean isEnabled;
 
-    public User(String name, String email, String password, Role role) {
-        this.username = name;
+    public User(String username, String email, String password, Role role, String verificationCode) {
+        this.username = username;
         this.email = email;
         this.password = password;
-        this.role = (role != null) ? role : Role.USER;
-        this.isAccountNonExpired = true;
-        this.isAccountNonLocked = true;
-        this.isCredentialsNonExpired = true;
-        this.isEnabled = true;
+        this.role = role;
+        this.verificationCode = verificationCode;
     }
 }

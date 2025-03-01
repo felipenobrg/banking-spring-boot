@@ -64,6 +64,7 @@ public class WebSecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/auth/**").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/test/**").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/auth/verify").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/test/**").permitAll()
                         .anyRequest().authenticated());
 

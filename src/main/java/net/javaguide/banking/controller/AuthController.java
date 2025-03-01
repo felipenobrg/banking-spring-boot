@@ -20,6 +20,10 @@ import net.javaguide.banking.entity.User;
 import net.javaguide.banking.repository.UserRepository;
 import net.javaguide.banking.security.jwt.JwtUtils;
 import net.javaguide.banking.security.model.UserDetailImpl;
+import net.javaguide.banking.service.MailService;
+
+import java.util.Map;
+
 import javax.validation.Valid;
 
 @RestController
@@ -37,6 +41,9 @@ public class AuthController {
 
     @Autowired
     JwtUtils jwtUtils;
+
+    @Autowired
+    MailService mailService;
 
     @PostMapping("/signin")
     public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
@@ -68,6 +75,7 @@ public class AuthController {
     @PostMapping("/signup")
     public ResponseEntity<?> registerUser(@Valid @RequestBody SignupRequest signUpRequest) {
         System.out.println(signUpRequest);
+
         if (userRepository.existsByUsername(signUpRequest.getUsername())) {
             return ResponseEntity.badRequest().body("Error: Username is already taken!");
         }
@@ -75,15 +83,44 @@ public class AuthController {
         if (userRepository.existsByEmail(signUpRequest.getEmail())) {
             return ResponseEntity.badRequest().body("Error: Email is already in use!");
         }
+
+        if (signUpRequest.getRole() == null) {
+            return ResponseEntity.badRequest().body("Error: Role cannot be null!");
+        }
+
+        String verificationCode = mailService.sendVerificationEmail(signUpRequest.getEmail());
+
         User user = new User(
                 signUpRequest.getUsername(),
                 signUpRequest.getEmail(),
                 encoder.encode(signUpRequest.getPassword()),
-                signUpRequest.getRole());
+                signUpRequest.getRole(),
+                verificationCode);
 
         userRepository.save(user);
 
-        return ResponseEntity.ok(("User registered successfully!"));
+        return ResponseEntity.ok("User registered successfully! Please verify your email.");
+    }
+
+    @PostMapping("/verify")
+    public ResponseEntity<?> verifyUser(@RequestBody Map<String, String> request) {
+        String verificationCode = request.get("verificationCode");
+
+        if (verificationCode == null || verificationCode.isBlank()) {
+            return ResponseEntity.badRequest().body("Error: Verification code is required!");
+        }
+
+        User user = userRepository.findByVerificationCode(verificationCode);
+
+        if (user == null) {
+            return ResponseEntity.badRequest().body("Error: Invalid verification code!");
+        }
+
+        user.setVerified(true);
+        user.setVerificationCode(null);
+        userRepository.save(user);
+
+        return ResponseEntity.ok("User verified successfully!");
     }
 
 }
